@@ -1,0 +1,63 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
+
+cc_binary(
+    name = "test",
+    srcs = ["test.cpp"],
+    deps = [
+        "@ThreadPool",
+    ],
+)
+
+cc_binary(
+    name = "test_producer_consumer",
+    srcs = ["test_producer_consumer.cpp"],
+    copts = [],
+    deps = [],
+)
+
+cc_binary(
+    name = "matrix_fast_power",
+    srcs = ["matrix_fast_power.cpp"],
+    copts = [],
+    deps = [],
+)
+
+cc_binary(
+    name = "test_hardware_concurrency",
+    srcs = ["test_hardware_concurrency.cpp"],
+    copts = [],
+    deps = [],
+)
+
+cc_binary(
+    name = "abseil_strings",
+    srcs = ["abseil_strings.cpp"],
+    deps = [
+        "@abseil//absl/strings",
+        "@abseil//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "abseil_sync",
+    srcs = ["abseil_sync.cpp"],
+    deps = [
+        "@abseil//absl/strings",
+        "@abseil//absl/synchronization",
+        "@gtest",
+        "@gtest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "asio_hello",
+    srcs = ["asio_hello.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "const_expr",
+    srcs = ["const_expr.cpp"],
+)
