@@ -61,3 +61,15 @@ cc_binary(
     name = "const_expr",
     srcs = ["const_expr.cpp"],
 )
+
+cc_test(
+    name = "std_container_test",
+    srcs = ["std_container_test.cpp"],
+    deps = ["@gtest//:gtest_main"],
+)
+
+cc_binary(
+    name = "custom_new_delete",
+    srcs = ["custom_new_delete.cpp"],
+    deps = ["@base//util:time_util"],
+)

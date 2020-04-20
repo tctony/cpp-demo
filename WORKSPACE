@@ -29,3 +29,8 @@ local_repository(
     name = "ThreadPool",
     path = "../lib/ThreadPool",
 )
+
+local_repository(
+    name = "base",
+    path = "../base",
+)
