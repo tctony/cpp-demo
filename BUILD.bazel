@@ -73,3 +73,8 @@ cc_binary(
     srcs = ["custom_new_delete.cpp"],
     deps = ["@base//util:time_util"],
 )
+
+cc_binary(
+    name = "custom_allocator",
+    srcs = ["custom_allocator.cpp"],
+)

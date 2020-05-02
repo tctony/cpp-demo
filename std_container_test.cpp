@@ -1,3 +1,4 @@
+#include <forward_list>
 #include <iostream>
 #include <map>
 #include <unordered_map>
@@ -22,5 +23,15 @@ TEST(map, unordered_multimap_find) {
   while (itr != m.end() && itr->first == 2) {
     std::cout << itr->first << ": " << itr->second << std::endl;
     ++itr;
+  }
+}
+
+TEST(forward_list, push_and_pop) {
+  std::forward_list<int> list;
+  for (int i = 0; i < 100; ++i) {
+    list.push_front(10);
+  }
+  while (!list.empty()) {
+    list.pop_front();
   }
 }
