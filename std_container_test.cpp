@@ -35,3 +35,21 @@ TEST(forward_list, push_and_pop) {
     list.pop_front();
   }
 }
+
+template <typename T>
+std::ostream& operator<<(std::ostream& s, const std::forward_list<T>& v) {
+  s.put('[');
+  char comma[3] = {'\0', ' ', '\0'};
+  for (const auto& e : v) {
+    s << comma << e;
+    comma[0] = ',';
+  }
+  return s << ']';
+}
+
+TEST(forward_list, insert_after_end) {
+  std::forward_list<int> list;
+  // will crash
+  // list.insert_after(list.begin(), 2);
+  std::cout << list << std::endl;
+}
