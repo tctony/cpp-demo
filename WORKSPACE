@@ -8,11 +8,47 @@ http_archive(
 
 load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
 
+# for projects that compile with configure&make
 rules_foreign_cc_dependencies()
 
+# protobuf
+http_archive(
+    name = "rules_proto",
+    sha256 = "6117a0f96af1d264747ea3f3f29b7b176831ed8acfd428e04f17c48534c83147",
+    strip_prefix = "rules_proto-8b81c3ccfdd0e915e46ffa888d3cdb6116db6fa5",
+    # commit date 2020-04-01
+    urls = [
+        "https://github.com/bazelbuild/rules_proto/archive/8b81c3ccfdd0e915e46ffa888d3cdb6116db6fa5.tar.gz",
+    ],
+)
+
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+
+rules_proto_dependencies()
+
+rules_proto_toolchains()
+
 local_repository(
-    name = "gtest",  # 1.10
+    name = "com_github_grpc_grpc",  # 1.28.1
+    path = "../lib/grpc",
+)
+
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+
+grpc_deps()
+
+load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
+
+grpc_extra_deps()
+
+local_repository(
+    name = "gtest_local",  # 1.10
     path = "../lib/googletest",
+)
+
+bind(
+    name = "gtest_main",
+    actual = "@gtest_local//:gtest_main",
 )
 
 local_repository(

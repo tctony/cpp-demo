@@ -1,0 +1,32 @@
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
+
+proto_library(
+    name = "common_proto",
+    srcs = ["common.proto"],
+)
+
+proto_library(
+    name = "greeter_proto",
+    srcs = [
+        "greeter.proto",
+    ],
+    deps = [
+        ":common_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "greeter_proto_cc",
+    visibility = ["//visibility:public"],
+    deps = [":greeter_proto"],
+)
+
+cc_grpc_library(
+    name = "greeter_grpc_cc",
+    srcs = [":greeter_proto"],
+    grpc_only = True,  # default to True in future
+    visibility = ["//visibility:public"],
+    deps = [":greeter_proto_cc"],
+)

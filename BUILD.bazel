@@ -42,10 +42,9 @@ cc_test(
     name = "abseil_sync",
     srcs = ["abseil_sync.cpp"],
     deps = [
+        "//external:gtest_main",
         "@abseil//absl/strings",
         "@abseil//absl/synchronization",
-        "@gtest",
-        "@gtest//:gtest_main",
     ],
 )
 
@@ -65,7 +64,7 @@ cc_binary(
 cc_test(
     name = "std_container_test",
     srcs = ["std_container_test.cpp"],
-    deps = ["@gtest//:gtest_main"],
+    deps = ["//external:gtest_main"],
 )
 
 cc_binary(

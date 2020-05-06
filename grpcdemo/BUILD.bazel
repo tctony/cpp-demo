@@ -1,0 +1,48 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+
+proto_deps = [
+    "//grpcdemo/proto:greeter_grpc_cc",
+]
+
+log_deps = [
+    "@base//zlog",
+    "@base//zlog:zlog_to_console",
+]
+
+cc_library(
+    name = "service_impl",
+    srcs = ["service_impl.cc"],
+    hdrs = ["service_impl.h"],
+    deps = proto_deps + [
+        "@com_github_grpc_grpc//:grpc++",
+    ],
+)
+
+cc_test(
+    name = "test",
+    srcs = ["test.cc"],
+    linkstatic = True,
+    deps = [
+        ":service_impl",
+        "//external:gtest_main",
+        "@com_github_grpc_grpc//:grpc++",
+    ],
+)
+
+cc_binary(
+    name = "server",
+    srcs = ["server.cpp"],
+    deps = log_deps + [
+        ":service_impl",
+        "@com_github_grpc_grpc//:grpc++",
+    ],
+)
+
+cc_binary(
+    name = "client",
+    srcs = ["client.cpp"],
+    deps = log_deps + proto_deps + [
+        "@com_github_grpc_grpc//:grpc++",
+        "@base//util:time_util",
+    ],
+)
