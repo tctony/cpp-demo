@@ -1,0 +1,27 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "producer_consumer",
+    srcs = ["producer_consumer.cpp"],
+    copts = [],
+    deps = [],
+)
+
+cc_binary(
+    name = "matrix_fast_power",
+    srcs = ["matrix_fast_power.cpp"],
+    copts = [],
+    deps = [],
+)
+
+cc_binary(
+    name = "hardware_concurrency",
+    srcs = ["hardware_concurrency.cpp"],
+    copts = [],
+    deps = [],
+)
+
+cc_binary(
+    name = "const_expr",
+    srcs = ["const_expr.cpp"],
+)

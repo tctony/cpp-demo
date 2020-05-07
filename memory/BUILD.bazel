@@ -1,0 +1,12 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "custom_new_delete",
+    srcs = ["custom_new_delete.cpp"],
+    deps = ["@base//util:time_util"],
+)
+
+cc_binary(
+    name = "custom_allocator",
+    srcs = ["custom_allocator.cpp"],
+)

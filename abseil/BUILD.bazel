@@ -1,0 +1,20 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
+
+cc_binary(
+    name = "abseil_strings",
+    srcs = ["abseil_strings.cpp"],
+    deps = [
+        "@abseil//absl/strings",
+        "@abseil//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "abseil_sync",
+    srcs = ["abseil_sync.cpp"],
+    deps = [
+        "//external:gtest_main",
+        "@abseil//absl/strings",
+        "@abseil//absl/synchronization",
+    ],
+)
