@@ -13,7 +13,7 @@ cc_library(
     name = "service_impl",
     srcs = ["service_impl.cc"],
     hdrs = ["service_impl.h"],
-    deps = proto_deps + [
+    deps = log_deps + proto_deps + [
         "@com_github_grpc_grpc//:grpc++",
     ],
 )

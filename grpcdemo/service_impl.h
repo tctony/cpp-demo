@@ -1,17 +1,29 @@
-#include <grpc/grpc.h>
-#include <grpcpp/server_context.h>
+#include <grpcpp/grpcpp.h>
 
 #include "grpcdemo/proto/greeter.grpc.pb.h"
 #include "grpcdemo/proto/greeter.pb.h"
 
-using greeter::Greeter;
-using greeter::HelloRequest;
-using greeter::HelloResponse;
-using grpc::ServerContext;
-using grpc::Status;
+namespace greeter {
 
 class ServiceImpl final : public Greeter::Service {
  public:
-  Status SayHello(ServerContext* context, const HelloRequest* request,
-                  HelloResponse* response);
+  ::grpc::Status SayHello(::grpc::ServerContext* context,
+                          const ::greeter::HelloRequest* request,
+                          ::greeter::HelloResponse* response) override;
+
+  ::grpc::Status SayHello1(
+      ::grpc::ServerContext* context,
+      ::grpc::ServerReader< ::greeter::HelloRequest>* reader,
+      ::greeter::HelloResponse* response) override;
+
+  ::grpc::Status SayHello2(
+      ::grpc::ServerContext* context, const ::greeter::HelloRequest* request,
+      ::grpc::ServerWriter< ::greeter::HelloResponse>* response) override;
+
+  ::grpc::Status SayHello3(
+      ::grpc::ServerContext* context,
+      ::grpc::ServerReaderWriter< ::greeter::HelloResponse,
+                                  ::greeter::HelloRequest>* stream) override;
 };
+
+}  // namespace greeter

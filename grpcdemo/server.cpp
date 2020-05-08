@@ -7,6 +7,7 @@
 #include "zlog/zlog.h"
 #include "zlog/zlog_to_console.h"
 
+using greeter::ServiceImpl;
 using grpc::Server;
 using grpc::ServerBuilder;
 

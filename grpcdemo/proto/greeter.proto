@@ -4,7 +4,12 @@ import "grpcdemo/proto/common.proto";
 
 package greeter;
 
-service Greeter { rpc SayHello(HelloRequest) returns (HelloResponse); }
+service Greeter {
+  rpc SayHello(HelloRequest) returns (HelloResponse);
+  rpc SayHello1(stream HelloRequest) returns (HelloResponse);
+  rpc SayHello2(HelloRequest) returns (stream HelloResponse);
+  rpc SayHello3(stream HelloRequest) returns (stream HelloResponse);
+}
 
 message HelloRequest {
   string name = 1;
