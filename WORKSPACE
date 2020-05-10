@@ -12,6 +12,11 @@ load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependen
 rules_foreign_cc_dependencies()
 
 # protobuf
+local_repository(
+    name = "com_google_protobuf",
+    path = "../lib/protobuf",  # v3.11.3
+)
+
 http_archive(
     name = "rules_proto",
     sha256 = "6117a0f96af1d264747ea3f3f29b7b176831ed8acfd428e04f17c48534c83147",
@@ -28,6 +33,7 @@ rules_proto_dependencies()
 
 rules_proto_toolchains()
 
+# grpc
 local_repository(
     name = "com_github_grpc_grpc",  # 1.28.1
     path = "../lib/grpc",
@@ -69,4 +75,9 @@ local_repository(
 local_repository(
     name = "base",
     path = "../base",
+)
+
+bind(
+    name = "console_log",
+    actual = "@base//zlog:zlog_to_console",
 )
