@@ -3,6 +3,9 @@
 #include "gtest/gtest.h"
 #include "service_impl.h"
 
+using namespace grpc;
+using namespace greeter;
+
 TEST(Greeter, SayHello) {
   ServiceImpl service;
   ServerContext context;
