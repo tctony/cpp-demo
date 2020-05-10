@@ -82,6 +82,6 @@ bind(
     actual = "@base//zlog:zlog_to_console",
 )
 
-load("//tools/bazel_compile_commands:deps_util.bzl", "bazel_compile_commands_deps")
+load("//tools/bazel_compile_commands:deps_load.bzl", "bazel_compile_commands_deps_load")
 
-bazel_compile_commands_deps()
+bazel_compile_commands_deps_load()
