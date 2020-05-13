@@ -9,13 +9,15 @@ log_deps = [
     "@base//zlog:zlog_to_console",
 ]
 
+gprc_deps = [
+    "@com_github_grpc_grpc//:grpc++",
+]
+
 cc_library(
     name = "service_impl",
     srcs = ["service_impl.cc"],
     hdrs = ["service_impl.h"],
-    deps = log_deps + proto_deps + [
-        "@com_github_grpc_grpc//:grpc++",
-    ],
+    deps = log_deps + proto_deps + gprc_deps,
 )
 
 cc_test(
@@ -25,7 +27,6 @@ cc_test(
     deps = [
         ":service_impl",
         "//external:gtest_main",
-        "@com_github_grpc_grpc//:grpc++",
     ],
 )
 
@@ -34,15 +35,19 @@ cc_binary(
     srcs = ["server.cpp"],
     deps = log_deps + [
         ":service_impl",
-        "@com_github_grpc_grpc//:grpc++",
     ],
 )
 
 cc_binary(
     name = "client",
     srcs = ["client.cpp"],
-    deps = log_deps + proto_deps + [
-        "@com_github_grpc_grpc//:grpc++",
+    deps = log_deps + proto_deps + gprc_deps + [
         "@base//util:time_util",
     ],
+)
+
+cc_binary(
+    name = "client_async",
+    srcs = ["client_async.cpp"],
+    deps = log_deps + proto_deps + gprc_deps,
 )
