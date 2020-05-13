@@ -5,3 +5,9 @@ cc_test(
     srcs = ["std_container_test.cpp"],
     deps = ["//external:gtest_main"],
 )
+
+cc_test(
+    name = "std_regex_test",
+    srcs = ["std_regex_test.cpp"],
+    deps = ["//external:gtest_main"],
+)
