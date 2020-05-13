@@ -3,9 +3,8 @@
 
 #include <string>
 
+#include "base/zlog/zlog_to_console.h"
 #include "service_impl.h"
-#include "zlog/zlog.h"
-#include "zlog/zlog_to_console.h"
 
 using greeter::ServiceImpl;
 using grpc::Server;

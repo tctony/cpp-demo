@@ -6,11 +6,11 @@
 #include <array>
 #include <string>
 
-#include "grpcdemo/proto/greeter.grpc.pb.h"
-#include "grpcdemo/proto/greeter.pb.h"
-#include "util/time_util.hpp"
-#include "zlog/zlog.h"
-#include "zlog/zlog_to_console.h"
+#include "base/util/time_util.hpp"
+#include "base/zlog/zlog.h"
+#include "base/zlog/zlog_to_console.h"
+#include "demo/grpcdemo/proto/greeter.grpc.pb.h"
+#include "demo/grpcdemo/proto/greeter.pb.h"
 
 using greeter::Greeter;
 using greeter::HelloRequest;

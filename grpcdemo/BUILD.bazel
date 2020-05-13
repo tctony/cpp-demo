@@ -1,12 +1,12 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 
 proto_deps = [
-    "//grpcdemo/proto:greeter_grpc_cc",
+    "//demo/grpcdemo/proto:greeter_grpc_cc",
 ]
 
 log_deps = [
-    "@base//zlog",
-    "@base//zlog:zlog_to_console",
+    "//base/zlog",
+    "//base/zlog:zlog_to_console",
 ]
 
 gprc_deps = [
@@ -42,7 +42,7 @@ cc_binary(
     name = "client",
     srcs = ["client.cpp"],
     deps = log_deps + proto_deps + gprc_deps + [
-        "@base//util:time_util",
+        "//base/util:time_util",
     ],
 )
 

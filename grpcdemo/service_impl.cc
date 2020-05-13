@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include "zlog/zlog.h"
+#include "base/zlog/zlog.h"
 
 using namespace grpc;
 

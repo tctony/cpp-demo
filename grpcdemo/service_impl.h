@@ -1,7 +1,7 @@
 #include <grpcpp/grpcpp.h>
 
-#include "grpcdemo/proto/greeter.grpc.pb.h"
-#include "grpcdemo/proto/greeter.pb.h"
+#include "demo/grpcdemo/proto/greeter.grpc.pb.h"
+#include "demo/grpcdemo/proto/greeter.pb.h"
 
 namespace greeter {
 

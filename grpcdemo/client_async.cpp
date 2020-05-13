@@ -1,6 +1,6 @@
 // clang-format off
 #define ZLOG_TAG "client_async"
-#include "zlog/zlog_to_console.h"
+#include "base/zlog/zlog_to_console.h"
 // clang-format on
 
 #include <string>
@@ -8,7 +8,7 @@
 #include <chrono>
 
 #include "grpcpp/grpcpp.h"
-#include "grpcdemo/proto/greeter.grpc.pb.h"
+#include "demo/grpcdemo/proto/greeter.grpc.pb.h"
 
 class GreeterClient {
  public:

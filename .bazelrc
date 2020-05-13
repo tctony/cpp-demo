@@ -1,3 +1,0 @@
-build --cxxopt='-std=c++17'
-
-build --experimental_action_listener=//tools/bazel_compile_commands/actions:generate_compile_commands_listener

@@ -1,8 +1,8 @@
 #include <iostream>
 
+#include "demo/pbtest/pbtest.pb.h"
 #include "google/protobuf/util/json_util.h"
 #include "gtest/gtest.h"
-#include "pbtest/pbtest.pb.h"
 
 using namespace std;
 using namespace pbtest;

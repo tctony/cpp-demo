@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "grpcdemo/proto/common.proto";
+import "demo/grpcdemo/proto/common.proto";
 
 package greeter;
 
