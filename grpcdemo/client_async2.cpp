@@ -8,18 +8,14 @@
 #include <string>
 
 #include "base/thread/thread_group.hpp"
-#include "base/thread/worker.hpp"
 #include "demo/grpcdemo/proto/greeter.grpc.pb.h"
 #include "grpcpp/grpcpp.h"
 
-using callback = std::function<void()>;
+using callback = std::function<void(int result)>;
 
 class GreeterClient : std::enable_shared_from_this<GreeterClient> {
  public:
-  GreeterClient(std::shared_ptr<base::Worker> worker) : worker_(worker) {
-    zinfo_function();
-    // init
-  }
+  GreeterClient() {}
   ~GreeterClient() {
     zinfo_function();
     stop();
@@ -47,31 +43,42 @@ class GreeterClient : std::enable_shared_from_this<GreeterClient> {
         }
         zdebug("got next ")(tag, ok);
         if (!ok) {
-          zinfo("ready to read and write");
+          zinfo("session closed");
+          break;
+        }
+        if (tag == nullptr && ok) {
+          if (notify_.message().size() == 0) {
+            zinfo("ready to read and write");
+          } else {
+            zinfo("got notify: %_", notify_.message());
+          }
           readNextNotify();
           continue;
         }
         if (tag != nullptr) {  // request sent
           auto ctx = static_cast<RequestContext *>(tag);
-          ctx->cb_();
+          if (ok) {
+            ctx->cb_(0);
+          } else {
+            // cancel or error?
+            ctx->cb_(-1);
+          }
           delete ctx;
-        } else {  // notify
-          readNextNotify();
-          zinfo("got notify: %_", notify_.message());
         }
       }
+
+      running_ = false;
     });
   }
 
-  void readNextNotify() {
-    // worker_->context()->post([client = shared_from_this()] {
-    stream_->Read(&notify_, (void *)0);
-    // });
-  }
+  void readNextNotify() { stream_->Read(&notify_, (void *)0); }
 
   void sendRequest(const greeter::HelloRequest &req, callback cb) {
+    if (!running_) {
+      cb(-2);
+      return;
+    }
     zassert(stream_ != nullptr && "should call run first!");
-    // TODO post to worker
     RequestContext *ctx = new RequestContext(std::move(cb));
     stream_->Write(req, (void *)ctx);
   }
@@ -79,10 +86,10 @@ class GreeterClient : std::enable_shared_from_this<GreeterClient> {
   void stop() {
     zinfo_function();
     if (!running_) return;
+    running_ = false;
 
     context_.TryCancel();
     cq_.Shutdown();
-    running_ = false;
     thread_.join();
   }
 
@@ -91,9 +98,6 @@ class GreeterClient : std::enable_shared_from_this<GreeterClient> {
     RequestContext(callback cb) : cb_(std::move(cb)) {}
     callback cb_;
   };
-
- private:
-  std::shared_ptr<base::Worker> worker_;
 
   std::atomic_bool running_{false};
 
@@ -112,18 +116,17 @@ GreeterClient *g_client = nullptr;
 std::atomic_bool g_running = false;
 void signalHandler(int signal) {
   zinfo("handle signal: %_", signal);
+  g_running = false;
   if (g_client) {
     g_client->stop();
   }
-  g_running = false;
 }
 
 int main(int argc, char const *argv[]) {
   signal(SIGINT, signalHandler);
   signal(SIGTERM, signalHandler);
 
-  auto worker = std::make_shared<base::Worker>();
-  auto client = std::make_shared<GreeterClient>(worker);
+  auto client = std::make_shared<GreeterClient>();
   g_client = client.get();
 
   client->run();
@@ -131,14 +134,16 @@ int main(int argc, char const *argv[]) {
 
   for (int i = 0; i < 100 && g_running; ++i) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
+    if (!g_running) break;
 
     greeter::HelloRequest req;
     req.set_name("tony");
-    client->sendRequest(req, [i] { zinfo("send request %_ succeed", i); });
+    client->sendRequest(req, [i](int result) {
+      zinfo("send request %_ finished: %_", i, result);
+    });
   }
 
   client.reset();
-  worker.reset();
 
   return 0;
 }

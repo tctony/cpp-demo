@@ -59,3 +59,13 @@ cc_binary(
         "//base/thread:worker",
     ],
 )
+
+cc_binary(
+    name = "server_async",
+    srcs = ["server_async.cc"],
+    deps = log_deps + [
+        ":service_impl",
+        "//base/util:disablecopy",
+        "//base/thread:thread_group",
+    ],
+)
