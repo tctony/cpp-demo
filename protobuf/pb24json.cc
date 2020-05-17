@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "demo/pbtest/pbtest.pb.h"
+#include "demo/protobuf/test.pb.h"
 #include "google/protobuf/util/json_util.h"
 #include "gtest/gtest.h"
 
 using namespace std;
-using namespace pbtest;
+using namespace testproto;
 
 using google::protobuf::util::JsonParseOptions;
 using google::protobuf::util::JsonPrintOptions;

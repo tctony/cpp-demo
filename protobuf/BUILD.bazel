@@ -1,0 +1,31 @@
+load("@rules_cc//cc:defs.bzl", "cc_proto_library", "cc_test")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+proto_library(
+    name = "proto",
+    srcs = ["test.proto"],
+    deps = ["@com_google_protobuf//:any_proto"],
+)
+
+cc_proto_library(
+    name = "cc_proto",
+    deps = [":proto"],
+)
+
+test_deps = [
+    ":cc_proto",
+    "//external:gtest_main",
+    "@abseil//absl/strings",
+]
+
+cc_test(
+    name = "pb24json",
+    srcs = ["pb24json.cc"],
+    deps = test_deps,
+)
+
+cc_test(
+    name = "any",
+    srcs = ["any.cc"],
+    deps = test_deps,
+)
