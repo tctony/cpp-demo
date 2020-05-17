@@ -267,20 +267,21 @@ std::shared_ptr<base::ThreadGroup> GreeterServer::StartWorkerThread() {
 
 std::shared_ptr<base::ThreadGroup> GreeterServer::StartBroadcastThread() {
   auto thread_broadcast = std::make_shared<base::ThreadGroup>();
-  // thread_broadcast->createThread([this] {
-  //   zinfo("thread broadcast started");
-  //   auto message = std::make_shared<greeter::HelloResponse>();
-  //   message->set_message("this is a broadcast message");
-  //   while (running_) {
-  //     std::shared_lock<std::shared_mutex> shared_lock_guard{mutex_sessions_};
-  //     for (const auto& itr : sessions_) {
-  //       std::lock_guard<std::mutex> lock_guard_inner{itr.second->mutex_};
-  //       itr.second->SendResponse(message);
-  //     }
-  //     std::this_thread::sleep_for(std::chrono::seconds(1));
-  //   }
-  //   zinfo("thread broadcast finished");
-  // });
+  thread_broadcast->createThread([this] {
+    zinfo("thread broadcast started");
+    auto message = std::make_shared<greeter::HelloResponse>();
+    message->set_message("this is a broadcast message");
+    while (running_) {
+      std::shared_lock<std::shared_mutex> shared_lock_guard{mutex_sessions_};
+      if (!running_) break;
+      for (const auto& itr : sessions_) {
+        std::lock_guard<std::mutex> lock_guard_inner{itr.second->mutex_};
+        itr.second->SendResponse(message);
+      }
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    zinfo("thread broadcast finished");
+  });
   return thread_broadcast;
 }
 
