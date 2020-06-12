@@ -25,3 +25,16 @@ cc_binary(
     name = "const_expr",
     srcs = ["const_expr.cpp"],
 )
+
+cc_binary(
+    name = "fsmlite_test",
+    srcs = [
+        "fsmlite_test.cpp",
+    ],
+    deps = [
+        "//3rd/fsmlite",
+        "//base/http",
+        "//base/util:string_util",
+        "@abseil//absl/strings",
+    ],
+)
