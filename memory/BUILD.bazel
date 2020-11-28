@@ -1,4 +1,4 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
 
 cc_binary(
     name = "custom_new_delete",
@@ -9,4 +9,12 @@ cc_binary(
 cc_binary(
     name = "custom_allocator",
     srcs = ["custom_allocator.cpp"],
+)
+
+cc_test(
+    name = "shared_ptr",
+    srcs = ["shared_ptr.cpp"],
+    deps = [
+        "//external:gtest_main",
+    ],
 )

@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "abseil_flag_ipport",
+    srcs = [
+        "abseil_flag_ipport.cpp",
+        "abseil_flag_ipport.hpp",
+    ],
+    deps = [
+        "@abseil//absl/strings",
+        "@abseil//absl/flags:marshalling",
+    ],
+)
