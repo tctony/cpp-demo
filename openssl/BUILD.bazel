@@ -13,6 +13,29 @@ config_settings_from_int_flag(
 )
 
 cc_binary(
+    name = "hmac",
+    srcs = [
+        "hmac.cpp",
+    ],
+    deps = [
+        "//base/zlog:zlog_to_console",
+        "@abseil//absl/strings",
+        "@openssl",
+    ],
+)
+
+cc_binary(
+    name = "list_names",
+    srcs = [
+        "list_names.cpp",
+    ],
+    deps = [
+        "//base/zlog:zlog_to_console",
+        "@openssl",
+    ],
+)
+
+cc_binary(
     name = "signature_benchmark",
     srcs = [
         "signature_benchmark.cpp",
