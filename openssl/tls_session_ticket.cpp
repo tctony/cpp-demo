@@ -264,10 +264,10 @@ int main(int argc, char *argv[]) {
 
   for (int i = 0; i < N_LOOP; ++i) {
     for (auto target : ip_ports) {
-      auto tpc_conn_clock = base::util::SimpleClock("tcp_conn_cost");
+      auto tcp_conn_clock = base::util::SimpleClock("tcp_conn_cost");
       auto tcp = create_tcp_conn(target.ip, target.port);
       assert(tcp != nullptr);
-      absl::PrintF("tcp conn cost %lldms\n", tpc_conn_clock.end());
+      absl::PrintF("tcp conn cost %lldms\n", tcp_conn_clock.end());
 
       auto tls_conn_clock = base::util::SimpleClock("tls_conn_cost");
       auto ssl = create_ssl_conn(ctx, &session, sni, tcp);
