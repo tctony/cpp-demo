@@ -1,30 +1,34 @@
-#include <err.h>
+// clang-format off
+#define ZLOG_TAG "zlog"
+#include "base/zlog/zlog_to_console.h"
+// clang-format on
+
 #include <netdb.h>
+#include <err.h>
 
 #include <iostream>
+#include <thread>
+#include <chrono>
 
-#include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
-#include "absl/flags/usage.h"
-#include "absl/strings/escaping.h"
-#include "absl/strings/str_format.h"
-#include "absl/strings/str_join.h"
-#include "absl/strings/str_split.h"
+#include "absl/flags/flag.h"
 #include "base/http/request_formatter.hpp"
 #include "base/http/response_parser.hpp"
 #include "base/util/time_util.hpp"
+#include "absl/strings/str_format.h"
 #include "demo/common/abseil_flag_ipport.hpp"
-#include "openssl/bio.h"
-#include "openssl/err.h"
 #include "openssl/ssl.h"
 
-#define N_LOOP 2
+#define N_LOOP N_TRY
 #ifndef N_TRY
 #define N_TRY 3
 #endif
 
-#define GET_SSL_ERR() ERR_error_string(ERR_get_error(), NULL)
+#define GET_SSL_ERR() ""
 
+ABSL_FLAG(int, optimize_level, 3,
+          "0: no optimize; 1: session resumption; 2: session resumption and "
+          "false start");
 ABSL_FLAG(std::string, sni, "", "sni name of https cert");
 ABSL_FLAG(std::vector<IpPort>, ip_ports, std::vector<IpPort>(),
           "pairs of ip:port");
@@ -68,73 +72,10 @@ std::shared_ptr<int> create_tcp_conn(std::string ip, std::string port) {
   });
 }
 
-void print_ssl_session_info(std::shared_ptr<SSL> ssl,
-                            SSL_SESSION *ssl_session) {
-  absl::PrintF("ssl session info begin---\n");
-
-  auto version = SSL_get_version(ssl.get());
-  absl::PrintF("version: %s\n", version);
-
-  auto reused = SSL_session_reused(ssl.get());
-  absl::PrintF("resused: %d\n", reused);
-
-  auto cipher = SSL_CIPHER_get_name(SSL_SESSION_get0_cipher(ssl_session));
-  absl::PrintF("cipher: %s\n", cipher);
-
-  auto client_random = [&]() {
-    std::array<unsigned char, 1024> buffer;
-    size_t len = SSL_get_client_random(ssl.get(), nullptr, 0);
-    SSL_get_client_random(ssl.get(), buffer.data(), len);
-    return std::string((const char *)buffer.data(), len);
-  }();
-  absl::PrintF("client random: %s\n", absl::BytesToHexString(client_random));
-
-  auto server_random = [&]() {
-    std::array<unsigned char, 1024> buffer;
-    size_t len = SSL_get_server_random(ssl.get(), nullptr, 0);
-    SSL_get_server_random(ssl.get(), buffer.data(), len);
-    return std::string((const char *)buffer.data(), len);
-  }();
-  absl::PrintF("server random: %s\n", absl::BytesToHexString(server_random));
-
-  auto session_id = [&]() {
-    unsigned int sid_len = 0;
-    auto sid = SSL_SESSION_get_id(ssl_session, &sid_len);
-    return absl::string_view((const char *)sid, sid_len);
-  }();
-  absl::PrintF("session id: %s\n", absl::BytesToHexString(session_id));
-
-  auto has_ticket = SSL_SESSION_has_ticket(ssl_session);
-  absl::PrintF("has ticket: %d\n", has_ticket);
-
-  if (has_ticket) {
-    auto session_ticket = [&]() {
-      const unsigned char *ticket;
-      size_t len;
-      SSL_SESSION_get0_ticket(ssl_session, &ticket, &len);
-      return std::string((const char *)ticket, len);
-    }();
-    absl::PrintF("session ticket: %s\n",
-                 absl::BytesToHexString(session_ticket));
-  }
-
-  auto master_key = [&]() {
-    std::array<unsigned char, 1024> buffer;
-    size_t len = SSL_SESSION_get_master_key(ssl_session, nullptr, 0);
-    SSL_SESSION_get_master_key(ssl_session, buffer.data(), len);
-    return std::string((const char *)buffer.data(), len);
-  }();
-  absl::PrintF("master key: %s\n", absl::BytesToHexString(master_key));
-
-  absl::PrintF("---ssl session info end\n");
-}
-
 std::shared_ptr<SSL> create_ssl_conn(std::shared_ptr<SSL_CTX> ctx,
                                      std::shared_ptr<SSL_SESSION> *session_ptr,
                                      std::string sni,
                                      std::shared_ptr<int> tcp_conn) {
-  assert(tcp_conn != nullptr);
-
   std::shared_ptr<SSL> ssl(SSL_new(ctx.get()), [](SSL *ptr) {
     auto ret = SSL_shutdown(ptr);
     // 发送close_notify
@@ -154,41 +95,33 @@ std::shared_ptr<SSL> create_ssl_conn(std::shared_ptr<SSL_CTX> ctx,
     return nullptr;
   }
 
+  assert(tcp_conn != nullptr);
+  SSL_set_fd(ssl.get(), *(tcp_conn.get()));
+
   if (SSL_set_tlsext_host_name(ssl.get(), sni.c_str()) != 1) {
     absl::PrintF("unable to set tls sni: %s\n", sni);
     return nullptr;
   }
 
-  SSL_set_fd(ssl.get(), *(tcp_conn.get()));
-
   // SSL_set_options(ssl.get(), SSL_OP_NO_TICKET);
 
   assert(session_ptr != nullptr);
   auto session = *session_ptr;
-  if (session) {
+  if (absl::GetFlag(FLAGS_optimize_level) >= 1 && session) {
     if (SSL_set_session(ssl.get(), session.get()) != 1) {
       absl::PrintF("unable to set reuse session. %s\n", GET_SSL_ERR());
       return nullptr;
     } else {
-      absl::PrintF("reusing ssl session\n");
+      zinfo("reusing ssl session\n");
     }
   } else {
-    absl::PrintF("no session usable\n");
+    zinfo("no session usable");
   }
 
   if (SSL_connect(ssl.get()) != 1) {
-    absl::PrintF("unable to start TLS negotiation with %s. %s\n", sni,
+    absl::PrintF("unable to do ssl handshake with %s. %s\n", sni,
                  GET_SSL_ERR());
     return nullptr;
-  }
-
-  /* Grab session to store it */
-  auto ssl_session = SSL_get1_session(ssl.get());
-  if (ssl_session) {
-    session_ptr->reset(ssl_session,
-                       [](SSL_SESSION *ptr) { SSL_SESSION_free(ptr); });
-
-    print_ssl_session_info(ssl, ssl_session);
   }
 
   return ssl;
@@ -233,32 +166,50 @@ void do_http_over_ssl(std::shared_ptr<SSL> ssl, std::string sni) {
   } while (true);
 }
 
+static void InfoCallback(const SSL *ssl, int type, int value) {
+  switch (type) {
+    case SSL_CB_HANDSHAKE_START:
+      zinfo("Handshake started");
+      break;
+    case SSL_CB_HANDSHAKE_DONE:
+      zinfo("Handshake done");
+      break;
+    case SSL_CB_CONNECT_LOOP:
+      zinfo("Handshake progress: %_", SSL_state_string_long(ssl));
+      break;
+  }
+}
+
 int main(int argc, char *argv[]) {
-  absl::SetProgramUsageMessage(
-      "Request each ip:port in turn to check reuse of tls session");
   absl::ParseCommandLine(argc, argv);
 
   auto sni = absl::GetFlag(FLAGS_sni);
   auto ip_ports = absl::GetFlag(FLAGS_ip_ports);
 
   if (sni.length() == 0) {
-    absl::PrintF("sni not set, see --help\n");
+    zerror("sni not set, see --help");
     exit(-1);
   } else if (ip_ports.size() == 0) {
-    absl::PrintF("ip_ports not set, see --help\n");
+    zerror("ip_ports not set, see --help");
     exit(-1);
   } else {
-    absl::PrintF("checking %s on %s\n", sni, AbslUnparseFlag(ip_ports));
+    zinfo("checking %_ on %_ with optimize level %_", sni,
+          AbslUnparseFlag(ip_ports), absl::GetFlag(FLAGS_optimize_level));
   }
-
-  SSL_load_error_strings();
-  SSL_library_init();
 
   std::shared_ptr<SSL_CTX> ctx(SSL_CTX_new(TLS_client_method()), SSL_CTX_free);
   if (ctx == nullptr) {
-    absl::PrintF("unable to init ssl context. %s\n", GET_SSL_ERR());
+    zerror("unable to init ssl context. %_", GET_SSL_ERR());
     exit(-1);
   }
+
+  if (absl::GetFlag(FLAGS_optimize_level) >= 2) {
+    zinfo("enable false start");
+    SSL_CTX_set_mode(ctx.get(), SSL_MODE_ENABLE_FALSE_START);
+    SSL_CTX_set_false_start_allowed_without_alpn(ctx.get(), 1);
+  }
+
+  SSL_CTX_set_info_callback(ctx.get(), InfoCallback);
 
   std::shared_ptr<SSL_SESSION> session;
 
@@ -267,21 +218,42 @@ int main(int argc, char *argv[]) {
       auto tcp_conn_clock = base::util::SimpleClock("tcp_conn_cost");
       auto tcp = create_tcp_conn(target.ip, target.port);
       assert(tcp != nullptr);
-      absl::PrintF("tcp conn cost %lldms\n", tcp_conn_clock.end());
+      zinfo("tcp conn cost %_ms", tcp_conn_clock.end());
 
       auto tls_conn_clock = base::util::SimpleClock("tls_conn_cost");
       auto ssl = create_ssl_conn(ctx, &session, sni, tcp);
       assert(ssl != nullptr);
-      absl::PrintF("tls conn cost %lldms\n", tls_conn_clock.end());
+      zinfo("tls conn cost %_ms", tls_conn_clock.end());
+      zinfo("tls conn false start %_", SSL_in_false_start(ssl.get()));
 
       for (int j = 0; j < N_TRY; ++j) {
         auto http_clock = base::util::SimpleClock("http_cost");
         do_http_over_ssl(ssl, sni);
-        absl::PrintF("http write read cost %lldms\n", http_clock.end());
+        zinfo("http write read cost %_ms", http_clock.end());
 
         std::cout << std::endl;
+
+        if (j) continue;
+        // if we do false start, we might get reusable session until now
+        auto ssl_session = SSL_get1_session(ssl.get());
+        if (ssl_session) {
+          session.reset(ssl_session,
+                        [](SSL_SESSION *ptr) { SSL_SESSION_free(ptr); });
+
+          if (absl::GetFlag(FLAGS_optimize_level) >= 2) {
+            zinfo("disable false start");
+            SSL_CTX_clear_mode(ctx.get(), SSL_MODE_ENABLE_FALSE_START);
+            SSL_CTX_set_false_start_allowed_without_alpn(ctx.get(), 0);
+          }
+        }
       }
+
+      using namespace std::chrono_literals;
+      // std::this_thread::sleep_for(100ms);
     }
+
+    using namespace std::chrono_literals;
+    // std::this_thread::sleep_for(5min + 10s);
   }
 
   return 0;

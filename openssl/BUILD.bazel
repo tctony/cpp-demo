@@ -1,27 +1,30 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary")
-load("//tools/bazel:util.bzl", "config_settings_from_int_flag")
+load("//tools/bazel:util.bzl", "config_setting_from_bool_flag")
 
-config_settings_from_int_flag(
-    config = [
-        1,
-        3,
-        5,
-        9,
-    ],
-    default_value = 3,
-    flag_name = "N_TRY",
+config_setting_from_bool_flag(
+    default_value = 0,
+    flag_name = "boringssl",
 )
+
+ssl_defines = select({
+    "//conditions:default": [ ],
+    "boringssl_enabled": [ "-DUSE_BORINGSSL" ],
+})
+ssl_libs = select({
+    "//conditions:default": [ "@openssl" ],
+    "boringssl_enabled": [ "@boringssl//:ssl" ],
+})
 
 cc_binary(
     name = "hmac",
     srcs = [
         "hmac.cpp",
     ],
+    copts = [] + ssl_defines,
     deps = [
         "//base/zlog:zlog_to_console",
         "@abseil//absl/strings",
-        "@openssl",
-    ],
+    ] + ssl_libs,
 )
 
 cc_binary(
@@ -29,10 +32,10 @@ cc_binary(
     srcs = [
         "list_names.cpp",
     ],
+    copts = [] + ssl_defines,
     deps = [
         "//base/zlog:zlog_to_console",
-        "@openssl",
-    ],
+    ] + ssl_libs,
 )
 
 cc_binary(
@@ -40,30 +43,9 @@ cc_binary(
     srcs = [
         "signature_benchmark.cpp",
     ],
+    copts = [],
     deps = [
         "//base/util:time_util",
-        "@openssl",
-    ],
-)
-
-cc_binary(
-    name = "tls_session_ticket",
-    srcs = [
-        "tls_session_ticket.cpp",
-    ],
-    copts = [] + select({
-        "//conditions:default": [],
-        "N_TRY_1": ["-DN_TRY=1"],
-        "N_TRY_3": ["-DN_TRY=3"],
-        "N_TRY_5": ["-DN_TRY=5"],
-        "N_TRY_9": ["-DN_TRY=9"],
-    }),
-    deps = [
-        "//base/http",
-        "//base/util:time_util",
-        "//demo/common:abseil_flag_ipport",
-        "@abseil//absl/flags:parse",
-        "@abseil//absl/strings",
         "@openssl",
     ],
 )
