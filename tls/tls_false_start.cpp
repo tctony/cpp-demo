@@ -112,6 +112,8 @@ std::shared_ptr<SSL> create_ssl_conn(std::shared_ptr<SSL_CTX> ctx,
       absl::PrintF("unable to set reuse session. %s\n", GET_SSL_ERR());
       return nullptr;
     } else {
+      // TODO if session ticket out live its lifetime, we should enable false
+      // start to achieve better performance
       zinfo("reusing ssl session\n");
     }
   } else {
