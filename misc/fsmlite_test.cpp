@@ -1,7 +1,11 @@
 #include <iostream>
 #include <vector>
 
+#ifndef external_fsmlite
 #include "3rd/fsmlite/fsm.h"
+#else
+#include "fsm.h"
+#endif
 #include "absl/strings/str_split.h"
 #include "base/http/request_formatter.hpp"
 #include "base/util/string_util.hpp"
