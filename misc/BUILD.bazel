@@ -57,3 +57,11 @@ cc_binary(
     name = "hash_with_salt",
     srcs = ["hash_with_salt.cpp"],
 )
+
+cc_binary(
+    name = "lsignal",
+    srcs = ["lsignal.cpp"],
+    deps = [
+        "@lsignal"
+    ],
+)
