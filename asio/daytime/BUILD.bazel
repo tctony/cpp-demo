@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "client_sync",
+    srcs = ["client_sync.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "server_sync",
+    srcs = ["server_async.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
