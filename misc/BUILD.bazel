@@ -52,3 +52,8 @@ cc_binary(
         "@abseil//absl/strings",
     ],
 )
+
+cc_binary(
+    name = "hash_with_salt",
+    srcs = ["hash_with_salt.cpp"],
+)

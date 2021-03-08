@@ -1,0 +1,42 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "timer1",
+    srcs = ["timer1.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "timer2",
+    srcs = ["timer2.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "timer3",
+    srcs = ["timer3.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "timer4",
+    srcs = ["timer4.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "timer5",
+    srcs = ["timer5.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+        "@ThreadPool",
+    ],
+)
