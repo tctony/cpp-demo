@@ -1,0 +1,6 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "make_int_seq",
+    srcs = ["make_int_seq.cpp"],
+)
