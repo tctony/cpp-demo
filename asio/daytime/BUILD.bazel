@@ -10,8 +10,16 @@ cc_binary(
 
 cc_binary(
     name = "server_sync",
-    srcs = ["server_async.cpp"],
+    srcs = ["server_sync.cpp"],
     deps = [
         "@asio//:asio_without_openssl",
     ],
+)
+
+cc_binary(
+    name = "server_async",
+    srcs = ["server_async.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ]
 )
