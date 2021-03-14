@@ -1,0 +1,20 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "allocation",
+    srcs = ["allocation.cpp"],
+    deps = [
+        "@abseil//absl/strings",
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "client",
+    srcs = ["client.cpp"],
+    deps = [
+        "//base/util:disablecopy",
+        "@abseil//absl/strings",
+        "@asio//:asio_without_openssl",
+    ],
+)
