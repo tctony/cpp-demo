@@ -1,0 +1,10 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "reference_counted_buffer",
+    srcs = ["reference_counted_buffer.cpp"],
+    deps = [
+        "@abseil//absl/strings",
+        "@asio//:asio_without_openssl",
+    ],
+)
