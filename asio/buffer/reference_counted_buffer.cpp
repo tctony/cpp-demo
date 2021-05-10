@@ -108,17 +108,17 @@ std::string make_daytime_string() {
 }
 
 class shared_const_buffer {
-public:
+ public:
   shared_const_buffer(const std::string& str)
-  : data_(new std::vector<char>(str.begin(), str.end())),
-    buffer_(asio::buffer(*data_)) {}
-  
+      : data_(new std::vector<char>(str.begin(), str.end())),
+        buffer_(asio::buffer(*data_)) {}
+
   using value_type = asio::const_buffer;
   using const_iterator = const asio::const_buffer*;
   const asio::const_buffer* begin() const { return &buffer_; }
   const asio::const_buffer* end() const { return &buffer_ + 1; }
 
-private:
+ private:
   std::shared_ptr<std::vector<char>> data_;
   asio::const_buffer buffer_;
 };
@@ -134,9 +134,8 @@ class connection : public std::enable_shared_from_this<connection> {
  private:
   void doWrite(std::size_t length) {
     auto buffer = shared_const_buffer(
-      absl::StrCat("got ", absl::string_view(data_.data(), length), " on ",
-                     make_daytime_string())
-    );
+        absl::StrCat("got ", absl::string_view(data_.data(), length), " on ",
+                     make_daytime_string()));
 
     auto self(shared_from_this());
     asio::async_write(

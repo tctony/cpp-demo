@@ -1,9 +1,7 @@
+#include <asio.hpp>
 #include <iostream>
 
-#include <asio.hpp>
-
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
   asio::io_context io_ctx;
   asio::steady_timer timer(io_ctx, asio::chrono::seconds(3));
   timer.wait();

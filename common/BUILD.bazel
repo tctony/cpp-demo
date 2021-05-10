@@ -9,7 +9,7 @@ cc_library(
         "abseil_flag_ipport.hpp",
     ],
     deps = [
-        "@abseil//absl/strings",
         "@abseil//absl/flags:marshalling",
+        "@abseil//absl/strings",
     ],
 )

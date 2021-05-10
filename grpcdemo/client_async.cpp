@@ -3,12 +3,12 @@
 #include "base/zlog/zlog_to_console.h"
 // clang-format on
 
-#include <string>
-#include <memory>
 #include <chrono>
+#include <memory>
+#include <string>
 
-#include "grpcpp/grpcpp.h"
 #include "demo/grpcdemo/proto/greeter.grpc.pb.h"
+#include "grpcpp/grpcpp.h"
 
 class GreeterClient {
  public:

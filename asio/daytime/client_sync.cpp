@@ -18,13 +18,13 @@ int main(int argc, char const* argv[]) {
 
     tcp::socket socket(ctx);
     asio::connect(socket, endpoints);
-    
+
     for (;;) {
       std::array<char, 128> buf;
       asio::error_code ec;
 
       auto len = socket.read_some(asio::buffer(buf), ec);
-      if (ec == asio::error::eof) 
+      if (ec == asio::error::eof)
         break;
       else if (ec) {
         throw asio::system_error(ec);

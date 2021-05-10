@@ -18,7 +18,7 @@ int get_index() {
 }
 
 int main(int argc, char const *argv[]) {
-  for (int i=0; i<200; ++i) {
+  for (int i = 0; i < 200; ++i) {
     std::cout << get_index() << std::endl;
   }
 

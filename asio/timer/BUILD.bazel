@@ -36,7 +36,7 @@ cc_binary(
     name = "timer5",
     srcs = ["timer5.cpp"],
     deps = [
-        "@asio//:asio_without_openssl",
         "@ThreadPool",
+        "@asio//:asio_without_openssl",
     ],
 )

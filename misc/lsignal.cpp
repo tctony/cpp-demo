@@ -92,9 +92,9 @@ int main(int argc, char* argv[]) {
   news();
 
   std::cout << "(disconnect connection two)\n";
-	// connection.disconnect() not working
-	// conn_two.disconnect();
-	news.disconnect(conn_two);
+  // connection.disconnect() not working
+  // conn_two.disconnect();
+  news.disconnect(conn_two);
   news();
 
   // example 4
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
     printer();
   }
 
-  printer(); // no output
+  printer();  // no output
 
   // example 6
   std::cout << "\nexample #6:\n";
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
     sig7.connect([]() { std::cout << "sig7\n"; }, &s);
     sig7();
   }
-  sig7(); // no output
+  sig7();  // no output
 
   // example 8
   std::cout << "\nexample #8: disconnect_all\n";
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
   sig8.connect(bar);
   sig8.connect(bar);
   sig8.connect(bar);
-	sig8();
+  sig8();
   sig8.disconnect_all();
   sig8();
 

@@ -47,9 +47,9 @@ cc_binary(
         "N_TRY_9": ["-DN_TRY=9"],
     }),
     deps = [
-        "//base/zlog:zlog_to_console",
         "//base/http",
         "//base/util:time_util",
+        "//base/zlog:zlog_to_console",
         "//demo/common:abseil_flag_ipport",
         "@abseil//absl/flags:parse",
         "@abseil//absl/strings",

@@ -1,12 +1,12 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 cc_binary(
-  name = "tcp_reuse",
-  srcs = [ "tcp_reuse.cpp" ],
-  deps = [
-    "//demo/common:abseil_flag_ipport",
-    "//base/http",
-    "//base/util:time_util",
-    "@abseil//absl/flags:parse",
-  ],
+    name = "tcp_reuse",
+    srcs = ["tcp_reuse.cpp"],
+    deps = [
+        "//base/http",
+        "//base/util:time_util",
+        "//demo/common:abseil_flag_ipport",
+        "@abseil//absl/flags:parse",
+    ],
 )

@@ -44,12 +44,12 @@ cc_binary(
     srcs = [
         "fsmlite_test.cpp",
     ],
-    copts = [ "-Dexternal_fsmlite" ],
+    copts = ["-Dexternal_fsmlite"],
     deps = [
-        "@fsmlite",
         "//base/http",
         "//base/util:string_util",
         "@abseil//absl/strings",
+        "@fsmlite",
     ],
 )
 
@@ -62,6 +62,6 @@ cc_binary(
     name = "lsignal",
     srcs = ["lsignal.cpp"],
     deps = [
-        "@lsignal"
+        "@lsignal",
     ],
 )

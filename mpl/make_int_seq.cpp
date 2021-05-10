@@ -1,10 +1,10 @@
-#include <iostream>
 #include <array>
+#include <iostream>
 
 template <int... Ns>
 struct int_sequence {
   using Type = std::array<int, sizeof...(Ns)>;
-  Type data{ { Ns... } };
+  Type data{{Ns...}};
   Type make() { return Type(); }
 };
 

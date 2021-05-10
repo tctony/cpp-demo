@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "asio.hpp"
 #include "absl/strings/str_cat.h"
+#include "asio.hpp"
 #include "base/util/disablecopy.h"
 
 enum CustomErrorCode {
@@ -11,8 +11,8 @@ enum CustomErrorCode {
 };
 
 class CustomErrorCategory : public std::error_category {
-public:
-  constexpr CustomErrorCategory() {};
+ public:
+  constexpr CustomErrorCategory(){};
   CLASS_DISABLE_COPY(CustomErrorCategory);
 
   virtual const char* name() const noexcept override {
@@ -32,8 +32,9 @@ public:
 };
 
 namespace std {
-template<> struct is_error_condition_enum<CustomErrorCode> : true_type {};
-} // namespace std
+template <>
+struct is_error_condition_enum<CustomErrorCode> : true_type {};
+}  // namespace std
 
 static CustomErrorCategory customErrorCategory;
 inline std::error_condition make_error_condition(CustomErrorCode ec) {

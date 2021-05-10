@@ -3,8 +3,9 @@
 #include "base/zlog/zlog_to_console.h"
 // clang-format on
 
-#include "absl/strings/escaping.h"
 #include "openssl/hmac.h"
+
+#include "absl/strings/escaping.h"
 
 // https://tools.ietf.org/pdf/rfc2104.pdf
 /*
