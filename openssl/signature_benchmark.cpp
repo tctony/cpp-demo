@@ -3,30 +3,30 @@
 #include <vector>
 
 #include "base/util/time_util.hpp"
-#include "openssl/ec.h"
-#include "openssl/ecdsa.h"
-#include "openssl/evp.h"
-#include "openssl/obj_mac.h"
+#include <openssl/ec.h>
+#include <openssl/ecdsa.h>
+#include <openssl/evp.h>
+#include <openssl/obj_mac.h>
 
 class Worker {
- public:
+public:
   virtual ~Worker() = default;
   virtual std::string Name() const = 0;
   virtual void Prepare() = 0;
-  virtual void Sign(const std::string data, std::string& sig) = 0;
+  virtual void Sign(const std::string data, std::string &sig) = 0;
   virtual void Verify(const std::string data, const std::string sig) = 0;
 };
 
 class Worker_Foo : public Worker {
- public:
+public:
   std::string Name() const override { return "Foo"; }
   void Prepare() override {}
-  void Sign(const std::string data, std::string& sig) override {}
+  void Sign(const std::string data, std::string &sig) override {}
   void Verify(const std::string data, const std::string sig) override {}
 };
 
 class Worker_ECDSA : public Worker {
- public:
+public:
   std::string Name() const override { return "ECDSA_" + CurveName(); }
   void Prepare() override {
     pkey_ = EC_KEY_new();
@@ -38,13 +38,13 @@ class Worker_ECDSA : public Worker {
     ret = EC_KEY_generate_key(pkey_);
     assert(ret == 1);
   }
-  void Sign(const std::string data, std::string& sig) override {
+  void Sign(const std::string data, std::string &sig) override {
     sig_ =
-        ECDSA_do_sign((const unsigned char*)data.c_str(), data.size(), pkey_);
+        ECDSA_do_sign((const unsigned char *)data.c_str(), data.size(), pkey_);
     assert(sig_ != nullptr);
   }
   void Verify(const std::string data, const std::string sig) override {
-    int ret = ECDSA_do_verify((const unsigned char*)data.c_str(), data.size(),
+    int ret = ECDSA_do_verify((const unsigned char *)data.c_str(), data.size(),
                               sig_, pkey_);
     assert(ret == 1);
   }
@@ -61,14 +61,14 @@ class Worker_ECDSA : public Worker {
     }
   }
 
- protected:
+protected:
   virtual std::string CurveName() const = 0;
   virtual int CurveId() const = 0;
 
- private:
-  EC_KEY* pkey_;
-  EC_GROUP* curve_;
-  ECDSA_SIG* sig_;
+private:
+  EC_KEY *pkey_;
+  EC_GROUP *curve_;
+  ECDSA_SIG *sig_;
 };
 
 // clang-format off
@@ -84,7 +84,7 @@ Worker_ECDSA_Define(prime192v1, SN_X9_62_prime192v1, NID_X9_62_prime192v1);
 Worker_ECDSA_Define(prime256v1, SN_X9_62_prime256v1, NID_X9_62_prime256v1);
 
 class Worker_EVP : Worker {
- public:
+public:
   std::string Name() const override { return "EVP"; }
   void Prepare() override {
     ctx_ = EVP_MD_CTX_new();
@@ -93,21 +93,21 @@ class Worker_EVP : Worker {
     // TODO
     // EVP_PKEY_CTX_
   }
-  void Sign(const std::string data, std::string& sig) override {
+  void Sign(const std::string data, std::string &sig) override {
     EVP_DigestSignInit(ctx_, nullptr, nullptr, nullptr, pkey_);
   }
   void Verify(const std::string data, const std::string sig) override {
     // TODO
   }
 
- private:
-  EVP_MD_CTX* ctx_;
-  EVP_PKEY* pkey_;
-  EVP_PKEY_CTX* pctx_;
+private:
+  EVP_MD_CTX *ctx_;
+  EVP_PKEY *pkey_;
+  EVP_PKEY_CTX *pctx_;
 };
 
-int main(int argc, char const* argv[]) {
-  std::vector<Worker*> workers{
+int main(int argc, char const *argv[]) {
+  std::vector<Worker *> workers{
       // new Worker_Foo(),
       new Worker_ECDSA_prime192v1(),
       new Worker_ECDSA_prime256v1(),

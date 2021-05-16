@@ -3,8 +3,8 @@
 #include "base/zlog/zlog_to_console.h"
 // clang-format on
 
-#include "openssl/evp.h"
-#include "openssl/objects.h"
+#include <openssl/evp.h>
+#include <openssl/objects.h>
 
 #ifdef USE_BORINGSSL
 #error boringssl-master-with-bazel do not contains decrepit

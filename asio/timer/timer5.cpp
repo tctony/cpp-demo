@@ -1,15 +1,14 @@
 #include <iostream>
 
-#include "ThreadPool.h"
-#include "asio.hpp"
+#include <ThreadPool.h>
+#include <asio.hpp>
 
 class Counter {
- public:
-  Counter(asio::io_context& ctx, int interval, int count)
+public:
+  Counter(asio::io_context &ctx, int interval, int count)
       : strand_(asio::make_strand(ctx)),
         timer1_(ctx, asio::chrono::seconds(interval)),
-        timer2_(ctx, asio::chrono::seconds(interval)),
-        interval_(interval),
+        timer2_(ctx, asio::chrono::seconds(interval)), interval_(interval),
         count_(count) {
     assert(count > 0);
 
@@ -21,7 +20,8 @@ class Counter {
   }
 
   void print1() {
-    if (!count_) return;
+    if (!count_)
+      return;
 
     std::cout << "timer1 " << count_ << std::endl;
     if (--count_) {
@@ -32,7 +32,8 @@ class Counter {
   }
 
   void print2() {
-    if (!count_) return;
+    if (!count_)
+      return;
 
     std::cout << "timer2 " << count_ << std::endl;
     if (--count_) {
@@ -42,7 +43,7 @@ class Counter {
     }
   }
 
- private:
+private:
   asio::strand<asio::io_context::executor_type> strand_;
   asio::steady_timer timer1_;
   asio::steady_timer timer2_;
@@ -50,7 +51,7 @@ class Counter {
   int count_;
 };
 
-int main(int argc, char const* argv[]) {
+int main(int argc, char const *argv[]) {
   asio::io_context ctx;
   auto _ = Counter(ctx, 1, 10);
 

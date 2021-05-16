@@ -3,7 +3,7 @@
 #include "base/zlog/zlog_to_console.h"
 // clang-format on
 
-#include "openssl/hmac.h"
+#include <openssl/hmac.h>
 
 #include "absl/strings/escaping.h"
 
@@ -75,7 +75,7 @@ std::string do_my_hmac() {
       do_sha256(std::string(buffer.begin(), buffer.end()) + data);
   assert(inner_result.length() == digest_size);
   for (int i = 0; i < block_size; ++i) {
-    buffer[i] ^= 0x36;  // rollback to original value
+    buffer[i] ^= 0x36; // rollback to original value
     buffer[i] ^= 0x5c;
   }
   auto result =

@@ -1,10 +1,10 @@
-#include "lsignal.h"
-
 #include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <numeric>
 #include <string>
+
+#include <lsignal.h>
 
 void print_sum(int x, int y) {
   std::cout << "sum(" << x << ", " << y << ") = " << (x + y) << "\n";

@@ -10,6 +10,8 @@
 #include <iostream>
 #include <thread>
 
+#include <openssl/ssl.h>
+
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
 #include "absl/strings/str_format.h"
@@ -17,7 +19,6 @@
 #include "base/http/response_parser.hpp"
 #include "base/util/time_util.hpp"
 #include "demo/common/abseil_flag_ipport.hpp"
-#include "openssl/ssl.h"
 
 #define N_LOOP N_TRY
 #ifndef N_TRY
@@ -170,15 +171,15 @@ void do_http_over_ssl(std::shared_ptr<SSL> ssl, std::string sni) {
 
 static void InfoCallback(const SSL *ssl, int type, int value) {
   switch (type) {
-    case SSL_CB_HANDSHAKE_START:
-      zinfo("Handshake started");
-      break;
-    case SSL_CB_HANDSHAKE_DONE:
-      zinfo("Handshake done");
-      break;
-    case SSL_CB_CONNECT_LOOP:
-      zinfo("Handshake progress: %_", SSL_state_string_long(ssl));
-      break;
+  case SSL_CB_HANDSHAKE_START:
+    zinfo("Handshake started");
+    break;
+  case SSL_CB_HANDSHAKE_DONE:
+    zinfo("Handshake done");
+    break;
+  case SSL_CB_CONNECT_LOOP:
+    zinfo("Handshake progress: %_", SSL_state_string_long(ssl));
+    break;
   }
 }
 
@@ -235,7 +236,8 @@ int main(int argc, char *argv[]) {
 
         std::cout << std::endl;
 
-        if (j) continue;
+        if (j)
+          continue;
         // if we do false start, we might get reusable session until now
         auto ssl_session = SSL_get1_session(ssl.get());
         if (ssl_session) {

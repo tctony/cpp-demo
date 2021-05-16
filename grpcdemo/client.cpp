@@ -1,10 +1,10 @@
+#include <array>
+#include <string>
+
 #include <grpc/grpc.h>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
-
-#include <array>
-#include <string>
 
 #include "base/util/time_util.hpp"
 #include "base/zlog/zlog.h"
@@ -98,7 +98,7 @@ int main(int argc, char const *argv[]) {
   {
     // SayHello3
     ClientContext context;
-    std::shared_ptr<ClientReaderWriter<HelloRequest, HelloResponse> > stream(
+    std::shared_ptr<ClientReaderWriter<HelloRequest, HelloResponse>> stream(
         stub->SayHello3(&context));
 
     std::thread writer([stream] {
