@@ -1,8 +1,16 @@
-load("@rules_cc//cc:defs.bzl", "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
 
 cc_test(
     name = "asio_hello",
     srcs = ["asio_hello.cpp"],
+    deps = [
+        "@asio//:asio_without_openssl",
+    ],
+)
+
+cc_binary(
+    name = "asio_use_service",
+    srcs = [ "use_service.cpp"],
     deps = [
         "@asio//:asio_without_openssl",
     ],
