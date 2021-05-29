@@ -1,0 +1,7 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "ioctl",
+    srcs = ["ioctl.cpp"],
+    # deps = [ "//external:gtest_main"],
+)
